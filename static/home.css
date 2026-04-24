@@ -24,8 +24,9 @@
 body {
   font-family: 'DM Sans', sans-serif;
   background:
-    radial-gradient(circle at top right, rgba(201,168,76,0.10), transparent 30%),
-    linear-gradient(180deg, #f8f5ee 0%, var(--cream) 42%, #eee8da 100%);
+    radial-gradient(circle at 14% 12%, rgba(255,255,255,0.82), transparent 24%),
+    radial-gradient(circle at top right, rgba(201,168,76,0.12), transparent 34%),
+    linear-gradient(135deg, #faf8f2 0%, var(--cream) 48%, #eee8da 100%);
   color: var(--text-main);
   min-height: 100vh;
 }
@@ -50,12 +51,13 @@ body {
 }
 
 .nav-logo img {
-  height: 60px;
-  width: auto;
-  object-fit: contain;
+  height: 54px;
+  width: 54px;
+  object-fit: cover;
   background: var(--white);
-  border-radius: 30px;
-  padding: 4px 8px;
+  border-radius: 50%;
+  padding: 3px;
+  border: 1px solid rgba(255,255,255,0.68);
   box-shadow: 0 8px 22px rgba(0,0,0,0.18);
 }
 
@@ -190,7 +192,9 @@ body {
   left: 0;
   width: var(--sidebar-w);
   height: calc(100vh - var(--navbar-h));
-  background: linear-gradient(180deg, var(--navy) 0%, #091a33 100%);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0)),
+    linear-gradient(180deg, #102848 0%, #0a1b34 100%);
   display: flex;
   flex-direction: column;
   padding: 28px 16px;
@@ -262,7 +266,7 @@ body {
 }
 
 .issue-card {
-  background: var(--white);
+  background: rgba(255,255,255,0.82);
   border-radius: var(--radius-card);
   padding: 32px 20px 28px;
   text-align: center;
@@ -272,6 +276,7 @@ body {
   border: 1px solid rgba(13,34,64,0.08);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(10px);
   transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
   cursor: pointer;
   display: flex;
@@ -301,7 +306,7 @@ body {
 .card-icon {
   width: 72px;
   height: 72px;
-  background: var(--cream);
+  background: linear-gradient(145deg, #fffdf8, var(--cream));
   border-radius: 50%;
   display: flex;
   align-items: center;

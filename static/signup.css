@@ -44,9 +44,9 @@ body {
   inset: 0;
   background: linear-gradient(
     120deg,
-    rgba(8, 18, 40, 0.65) 0%,
-    rgba(8, 18, 40, 0.25) 55%,
-    rgba(8, 18, 40, 0.10) 100%
+    rgba(8, 18, 40, 0.54) 0%,
+    rgba(13, 34, 64, 0.24) 55%,
+    rgba(201, 168, 76, 0.08) 100%
   );
   z-index: 1;
 }
@@ -99,13 +99,15 @@ body {
 
 /* ---------- Card ---------- */
 .card {
-  background: var(--card-bg);
+  background: rgba(250,247,242,0.91);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 44px 44px 36px;
   width: 100%;
   max-width: 460px;
   animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  border: 1px solid rgba(255,255,255,0.72);
+  backdrop-filter: blur(10px);
 }
 
 @keyframes slideUp {
@@ -121,9 +123,14 @@ body {
 }
 
 .logo-img {
-  height: 150px;
-  width: auto;
-  object-fit: contain;
+  height: 132px;
+  width: 132px;
+  object-fit: cover;
+  border-radius: 50%;
+  padding: 4px;
+  background: var(--white);
+  border: 1px solid rgba(13,34,64,0.10);
+  box-shadow: 0 12px 30px rgba(13,34,64,0.16);
 }
 
 /* ---------- Title ---------- */

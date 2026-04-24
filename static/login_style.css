@@ -53,9 +53,9 @@ body {
   inset: 0;
   background: linear-gradient(
     120deg,
-    rgba(8, 18, 40, 0.55) 0%,
-    rgba(8, 18, 40, 0.20) 60%,
-    rgba(8, 18, 40, 0.10) 100%
+    rgba(8, 18, 40, 0.48) 0%,
+    rgba(13, 34, 64, 0.22) 55%,
+    rgba(201, 168, 76, 0.08) 100%
   );
   z-index: 1;
 }
@@ -75,7 +75,7 @@ body {
 
 /* ---------- Card ---------- */
 .card {
-  background: var(--card-bg);
+  background: rgba(255,255,255,0.90);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border: 1px solid rgba(255,255,255,0.72);
@@ -100,10 +100,14 @@ body {
 }
 
 .logo-img {
-  height: 150px;
-  width: auto;
-  object-fit: contain;
-  /* White background removed — logo.jpeg has its own white bg */
+  height: 132px;
+  width: 132px;
+  object-fit: cover;
+  border-radius: 50%;
+  padding: 4px;
+  background: var(--white);
+  border: 1px solid rgba(13,34,64,0.10);
+  box-shadow: 0 12px 30px rgba(13,34,64,0.16);
 }
 
 /* ---------- Title ---------- */

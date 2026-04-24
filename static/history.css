@@ -22,7 +22,10 @@
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background: var(--cream);
+  background:
+    radial-gradient(circle at 14% 12%, rgba(255,255,255,0.82), transparent 24%),
+    radial-gradient(circle at top right, rgba(201,168,76,0.12), transparent 34%),
+    linear-gradient(135deg, #faf8f2 0%, var(--cream) 48%, #eee8da 100%);
   color: var(--text-main);
   min-height: 100vh;
 }
@@ -34,18 +37,20 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: var(--navbar-h);
-  background: var(--navy);
+  background: linear-gradient(135deg, #08182f 0%, var(--navy) 56%, #132f55 100%);
   display: flex;
   align-items: center;
   padding: 0 28px;
   z-index: 100;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+  box-shadow: 0 10px 34px rgba(0,0,0,0.22);
 }
 
 .nav-logo { display: flex; align-items: center; width: var(--sidebar-w); flex-shrink: 0; }
 .nav-logo img {
-  height: 46px; width: auto; object-fit: contain;
-  background: var(--white); border-radius: 8px; padding: 4px 8px;
+  height: 54px; width: 54px; object-fit: cover;
+  background: var(--white); border-radius: 50%; padding: 3px;
+  border: 1px solid rgba(255,255,255,0.68);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.18);
 }
 
 .nav-links { display: flex; align-items: center; gap: 6px; flex: 1; padding-left: 16px; }
@@ -114,7 +119,9 @@ body {
   top: var(--navbar-h); left: 0;
   width: var(--sidebar-w);
   height: calc(100vh - var(--navbar-h));
-  background: var(--navy);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0)),
+    linear-gradient(180deg, #102848 0%, #0a1b34 100%);
   display: flex; flex-direction: column;
   padding: 28px 16px; gap: 6px;
   box-shadow: 2px 0 12px rgba(0,0,0,0.15);
