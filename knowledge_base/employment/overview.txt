@@ -1,0 +1,35 @@
+EMPLOYMENT LAW — Key Concepts
+==============================
+
+Wrongful Termination
+---------------------
+Employees cannot be fired for illegal reasons including:
+- Discrimination (race, gender, religion, disability, age, national origin)
+- Retaliation for filing a complaint, whistleblowing, or taking FMLA leave
+- Breach of employment contract
+
+In "at-will" employment states, employers can fire without cause unless a protected reason is involved.
+
+Workplace Discrimination
+------------------------
+Protected classes under federal law (US) include race, colour, religion, sex, national origin, disability, age (40+), and genetic information. Employers with 15+ employees must comply with Title VII, ADA, ADEA.
+
+Harassment
+----------
+Sexual harassment includes quid pro quo (job benefits tied to sexual favours) and hostile work environment (unwelcome conduct that creates offensive atmosphere). Employees should document incidents and report to HR or EEOC.
+
+Minimum Wage & Overtime
+-----------------------
+Federal minimum wage (US) is $7.25/hour; many states are higher. Non-exempt employees get 1.5x pay for hours over 40/week (FLSA). Exempt employees (managers, professionals earning $684+/week) are excluded.
+
+Family and Medical Leave (FMLA)
+--------------------------------
+Eligible employees at companies with 50+ workers get up to 12 weeks unpaid, job-protected leave per year for birth/adoption, serious health condition, or caring for a family member.
+
+Workers' Compensation
+---------------------
+Employers must carry workers' comp insurance. Injured employees receive medical benefits and partial wage replacement regardless of fault. Filing a workers' comp claim is protected activity.
+
+Non-Compete Agreements
+----------------------
+Enforceability varies by state. Must be reasonable in scope, duration, and geography. Some states (California, Minnesota) largely ban them.

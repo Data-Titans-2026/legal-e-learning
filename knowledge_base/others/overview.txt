@@ -1,0 +1,35 @@
+GENERAL LEGAL — Key Concepts
+==============================
+Small Claims Court
+-------------------
+For disputes typically under $5,000–$10,000 (varies by state). No attorney required in most states. File in the county where the defendant lives or where the incident occurred. Filing fees are usually $30–$100.
+
+Statute of Limitations
+-----------------------
+Time limits to file lawsuits vary by claim type and state:
+- Personal injury: 2–3 years
+- Contract disputes: 3–6 years
+- Property damage: 3–5 years
+- Medical malpractice: 2–3 years
+- Fraud: 3–6 years
+Claims filed after the deadline are typically dismissed.
+
+Power of Attorney
+-----------------
+A legal document authorising someone (the agent) to act on your behalf. Durable POA remains valid if you become incapacitated. Healthcare POA covers medical decisions; Financial POA covers financial/property matters.
+
+Wills & Estates
+---------------
+Without a will, assets pass by intestate succession laws (typically to spouse, then children, then other relatives). A will must be signed in front of witnesses (usually 2) and may need notarisation. Probate is the court process to validate a will and distribute assets.
+
+Notarisation
+------------
+A notary public verifies identities and witnesses signatures. Required for deeds, powers of attorney, and many legal documents. Remote online notarisation (RON) is now available in many states.
+
+Mediation vs Litigation
+-----------------------
+Mediation: voluntary, private, non-binding process where a neutral mediator helps parties reach agreement. Much cheaper and faster than court. Litigation: formal court process with binding judgment. Often takes 1–3+ years.
+
+Finding Legal Aid
+-----------------
+Low-income individuals may qualify for free legal help from Legal Aid organisations. Bar associations maintain lawyer referral services. Law school clinics offer supervised free or low-cost services.

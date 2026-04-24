@@ -1,0 +1,136 @@
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 260px;
+  max-width: 360px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: rgba(10, 27, 52, 0.96);
+  color: #f7f1df;
+  box-shadow: 0 18px 40px rgba(7, 18, 36, 0.28);
+  font: 500 0.95rem/1.4 "DM Sans", sans-serif;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success {
+  border-left: 4px solid #d4af37;
+}
+
+.toast.error {
+  border-left: 4px solid #d9534f;
+}
+
+.toast.info {
+  border-left: 4px solid #8fb3d9;
+}
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(7, 18, 36, 0.62);
+  backdrop-filter: blur(3px);
+  z-index: 2100;
+}
+
+.confirm-overlay.hidden {
+  display: none;
+}
+
+.confirm-modal {
+  width: min(100%, 420px);
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: #fffdf7;
+  box-shadow: 0 24px 50px rgba(7, 18, 36, 0.22);
+  color: #0a1b34;
+  font-family: "DM Sans", sans-serif;
+}
+
+.confirm-modal h3 {
+  margin: 0 0 10px;
+  font: 700 1.2rem/1.2 "Playfair Display", serif;
+}
+
+.confirm-modal p {
+  margin: 0;
+  color: #32445d;
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.confirm-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font: 600 0.95rem/1 "DM Sans", sans-serif;
+  cursor: pointer;
+  transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+}
+
+.confirm-btn:hover {
+  transform: translateY(-1px);
+}
+
+.confirm-btn.cancel {
+  background: #e8edf4;
+  color: #0a1b34;
+}
+
+.confirm-btn.confirm {
+  background: linear-gradient(135deg, #b48a2c, #d4af37);
+  color: #0a1b34;
+}
+
+.is-loading {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+@media (max-width: 640px) {
+  .toast-container {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  .toast {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .confirm-actions {
+    flex-direction: column-reverse;
+  }
+
+  .confirm-btn {
+    width: 100%;
+  }
+}

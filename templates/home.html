@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Legal E-Learner — ...</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.jpeg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="nav-logo">
+      <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Legal E-Learner" />
+    </div>
+
+    <nav class="nav-links">
+      <a href="{{ url_for('home') }}" class="nav-link active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Home
+      </a>
+      <a href="{{ url_for('history') }}" class="nav-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        History
+      </a>
+    </nav>
+
+    <div class="nav-user" id="userMenu">
+      <button class="user-btn" onclick="toggleDropdown()">
+        <span class="user-avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </span>
+        <span class="user-name" id="displayName">User</span>
+        <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+
+      <div class="dropdown-menu" id="dropdownMenu">
+        <div class="dropdown-header">
+          <span id="dropdownEmail">admin@legalsalah.com</span>
+        </div>
+        <hr class="dropdown-divider"/>
+        <a href="{{ url_for('profile') }}" class="dropdown-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          My Profile
+        </a>
+        <a href="#" class="dropdown-item logout" onclick="handleLogout()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Log Out
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <a href="{{ url_for('home') }}" class="sidebar-link active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Home
+      </a>
+      <a href="{{ url_for('history') }}" class="sidebar-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        History
+      </a>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h1>Select Your Legal Issue</h1>
+        <p>Please select the category of legal issue you're facing.</p>
+      </div>
+
+      <div class="issues-grid">
+        <a href="{{ url_for('chatbot') }}?issue=family-law" class="issue-card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24"
+              fill="var(--navy)" stroke="none">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+          </div>
+          <h3>Family Law</h3>
+          <p>Divorce, custody, marriage &amp; adoption</p>
+        </a>
+
+        <a href="{{ url_for('chatbot') }}?issue=property-disputes" class="issue-card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24"
+              fill="var(--navy)" stroke="none">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+          </div>
+          <h3>Property Disputes</h3>
+          <p>Land, rent &amp; real estate legal issues</p>
+        </a>
+
+        <a href="{{ url_for('chatbot') }}?issue=employment" class="issue-card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24"
+              fill="var(--navy)" stroke="none">
+              <path d="M20 6h-2.18c.07-.44.18-.86.18-1.3C18 2.12 15.88 0 13.3 0c-1.3 0-2.4.52-3.27 1.35L9 3.38 7.97 2.35C7.1 1.52 6 1 4.7 1 2.12 1 0 3.12 0 5.7c0 .44.11.86.18 1.3H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-7.7-4.43c.54-.52 1.23-.82 1.99-.82C15.77 .75 17 1.98 17 3.45c0 .78-.32 1.47-.82 1.98L9 12.63 2.82 6.45c-.5-.51-.82-1.2-.82-1.98 0-1.47 1.23-2.7 2.7-2.7.77 0 1.45.3 1.99.82L9 4.77l3.3-3.2z"/>
+            </svg>
+          </div>
+          <h3>Employment Issues</h3>
+          <p>Workplace rights, termination &amp; contracts</p>
+        </a>
+
+        <a href="{{ url_for('chatbot') }}?issue=consumer-rights" class="issue-card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24"
+              fill="var(--navy)" stroke="none">
+              <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.17 14.75L7.2 14.6l.9-1.6H16.8c.75 0 1.41-.41 1.75-1.03l3.88-7.03A1 1 0 0 0 21.56 3H5.21L4.27 1H1v2h2l3.6 7.59L5.25 13c-.16.28-.25.61-.25.95C5 15.1 5.9 16 7 16h12v-2H7.42c-.13 0-.25-.11-.25-.25z"/>
+            </svg>
+          </div>
+          <h3>Consumer Rights</h3>
+          <p>Fraud, defective products &amp; complaints</p>
+        </a>
+
+        <a href="{{ url_for('chatbot') }}?issue=criminal-law" class="issue-card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24"
+              fill="none" stroke="var(--navy)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8.5" cy="8.5" r="4"/>
+              <circle cx="15.5" cy="8.5" r="4"/>
+              <path d="M12 12v8M8 20h8"/>
+            </svg>
+          </div>
+          <h3>Criminal Law</h3>
+          <p>FIR, bail, defence &amp; criminal procedure</p>
+        </a>
+
+        <a href="{{ url_for('chatbot') }}?issue=business-law" class="issue-card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24"
+              fill="var(--navy)" stroke="none">
+              <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
+            </svg>
+          </div>
+          <h3>Business Law</h3>
+          <p>Contracts, partnerships &amp; compliance</p>
+        </a>
+
+        <a href="{{ url_for('chatbot') }}?issue=civil-rights" class="issue-card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24"
+              fill="var(--navy)" stroke="none">
+              <path d="M12 2L3 7l9 5 9-5-9-5zM3 17l9 5 9-5M3 12l9 5 9-5"/>
+            </svg>
+          </div>
+          <h3>Civil Rights</h3>
+          <p>Financial disputes, equality &amp; liberties</p>
+        </a>
+
+        <a href="{{ url_for('chatbot') }}?issue=others" class="issue-card">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24"
+              fill="var(--navy)" stroke="none">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7v-2h10v2zm0-3H7V9h10v2zm0-3H7V6h10v2z"/>
+            </svg>
+          </div>
+          <h3>Others</h3>
+          <p>Any other legal queries &amp; general advice</p>
+        </a>
+      </div>
+
+      <footer class="page-footer">
+        &copy; 2024 © 2024 Legal E-Learner &nbsp;|&nbsp;
+        <a href="#">Terms of Service</a> &nbsp;|&nbsp;
+        <a href="#">Privacy Policy</a>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('userMenu');
+      if (!menu.contains(e.target)) {
+        document.getElementById('dropdownMenu').classList.remove('open');
+      }
+    });
+
+    function toggleDropdown() {
+      document.getElementById('dropdownMenu').classList.toggle('open');
+    }
+
+    function handleLogout() {
+      window.location.href = "{{ url_for('login') }}";
+    }
+  </script>
+
+</body>
+</html>

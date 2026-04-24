@@ -1,0 +1,291 @@
+/* =============================================
+   Legal सलाह — Admin Login Styles
+   ============================================= */
+
+/* ---------- CSS Variables ---------- */
+:root {
+  --navy:        #0d2240;
+  --navy-mid:    #1a3560;
+  --navy-light:  #2a4a80;
+  --gold:        #c9a84c;
+  --gold-light:  #e8c97a;
+  --white:       #ffffff;
+  --off-white:   #f4f1eb;
+  --text-muted:  #7a8a9a;
+  --card-bg:     rgba(255, 255, 255, 0.97);
+  --shadow:      0 34px 90px rgba(10, 20, 50, 0.48);
+  --input-border:#c8d0dc;
+  --radius:      20px;
+}
+
+/* ---------- Reset ---------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Body ---------- */
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---------- Background Image ---------- */
+.bg-image {
+  position: fixed;
+  inset: 0;
+  background-image: url('/static/backgroun_image_log_in.jpeg'); /* ← Change this path */
+  background-size: 1600px;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+/* ---------- Overlay (darkening layer) ---------- */
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(8, 18, 40, 0.55) 0%,
+    rgba(8, 18, 40, 0.20) 60%,
+    rgba(8, 18, 40, 0.10) 100%
+  );
+  z-index: 1;
+}
+
+/* ---------- Card Wrapper ---------- */
+.card-wrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  padding-right: 6vw;
+  padding-left: 50%;               /* push card to right half */
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,0.72);
+  padding: 52px 48px 44px;
+  width: 100%;
+  max-width: 440px;
+  min-width: 320px;
+  animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(32px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* ---------- Logo ---------- */
+.logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.logo-img {
+  height: 150px;
+  width: auto;
+  object-fit: contain;
+  /* White background removed — logo.jpeg has its own white bg */
+}
+
+/* ---------- Title ---------- */
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.title-rule {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 2px;
+  margin: 0 auto 32px;
+}
+
+/* ---------- Form Groups ---------- */
+.form-group {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--navy-mid);
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid var(--input-border);
+  background: transparent;
+  padding: 10px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.98rem;
+  color: var(--navy);
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.form-group input::placeholder {
+  color: #b0bac6;
+  font-style: italic;
+}
+
+.form-group input:focus {
+  border-bottom-color: var(--navy-light);
+  box-shadow: 0 8px 16px -16px rgba(13,34,64,0.45);
+}
+
+/* ---------- Password Row ---------- */
+.password-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.password-wrap input {
+  flex: 1;
+}
+
+.eye-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  margin-left: 8px;
+  transition: color 0.2s;
+  line-height: 0;
+}
+
+.eye-btn:hover {
+  color: var(--navy);
+}
+
+/* ---------- Forgot Password ---------- */
+.forgot-wrap {
+  text-align: right;
+  margin-top: -12px;
+  margin-bottom: 32px;
+}
+
+.forgot-link {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: var(--gold);
+}
+
+/* ---------- Sign In Button ---------- */
+.btn-signin {
+  width: 100%;
+  padding: 15px;
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s, transform 0.15s, box-shadow 0.3s;
+  box-shadow: 0 6px 24px rgba(13, 34, 64, 0.28);
+}
+
+.btn-signin::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.08) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+
+.btn-signin:hover {
+  background: var(--navy-light);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(13, 34, 64, 0.38);
+}
+
+.btn-signin:hover::after {
+  transform: translateX(100%);
+}
+
+.btn-signin:active {
+  transform: translateY(0);
+}
+
+/* ---------- Sign Up Text ---------- */
+.signup-text {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.signup-link {
+  color: var(--navy-mid);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold);
+  padding-bottom: 1px;
+  transition: color 0.2s;
+}
+
+.signup-link:hover {
+  color: var(--gold);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .card-wrapper {
+    padding-right: 0;
+    padding-left: 0;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 40px 28px 36px;
+    border-radius: 16px;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+  }
+}

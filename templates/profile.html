@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Legal E-Learner — My Profile</title>
+
+  <link rel="icon" href="{{ url_for('static', filename='logo.jpeg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='ui-feedback.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="{{ url_for('static', filename='ui-feedback.js') }}"></script>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="nav-logo">
+      <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Legal E-Learner">
+    </div>
+
+    <nav class="nav-links">
+      <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+      <a href="{{ url_for('history') }}" class="nav-link">History</a>
+    </nav>
+
+    <div class="nav-user" id="userMenu">
+      <button class="user-btn" onclick="toggleDropdown()">
+        <span class="user-avatar">{{ session.get('user_name', 'U')[0] }}</span>
+        <span class="user-name">{{ session.get('user_name', 'User') }}</span>
+        <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+
+      <div class="dropdown-menu" id="dropdownMenu">
+        <div class="dropdown-header">{{ session.get('user_email', 'user@example.com') }}</div>
+        <hr class="dropdown-divider"/>
+
+        <a href="{{ url_for('profile') }}" class="dropdown-item active-item">
+          My Profile
+        </a>
+
+        <a href="{{ url_for('logout') }}" class="dropdown-item logout">
+          Log Out
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <a href="{{ url_for('home') }}" class="sidebar-link">Home</a>
+      <a href="{{ url_for('history') }}" class="sidebar-link">History</a>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-shell">
+        <section class="page-header">
+          <h1>My Account</h1>
+          <p>Update your account information.</p>
+        </section>
+
+        <section class="profile-card">
+          <div class="profile-top">
+            <div class="profile-pic">
+              <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+
+            <div class="profile-meta">
+              <h2 id="profileDisplayName">{{ user.name }}</h2>
+            </div>
+          </div>
+
+          <form class="profile-form" onsubmit="saveProfile(event)">
+            <div class="form-group">
+              <label for="fullname">Full Name</label>
+              <input type="text" id="fullname" value="{{ user.name }}" placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <div class="input-icon-wrap">
+                <input type="email" id="email" value="{{ user.email }}" placeholder="Enter your email">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">New Password</label>
+              <div class="input-icon-wrap">
+                <input type="password" id="password" placeholder="Leave blank to keep current password">
+                <button class="eye-btn" type="button" onclick="togglePassword()" aria-label="Show password">
+                  <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-cancel" onclick="resetProfile()">Cancel</button>
+              <button type="submit" class="btn-save" id="btn-save-profile">Save Changes</button>
+            </div>
+
+            <p class="terms-text">
+              By updating your account, you agree to our
+              <a href="#">Terms of Service</a> and
+              <a href="#">Privacy Policy</a>
+            </p>
+          </form>
+        </section>
+
+        <footer class="page-footer">
+          &copy; 2024 Legal E-Learner |
+          <a href="#">Terms of Service</a> |
+          <a href="#">Privacy Policy</a>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const originalName = "{{ user.name }}";
+    const originalEmail = "{{ user.email }}";
+
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('userMenu');
+      if (!menu.contains(e.target)) {
+        document.getElementById('dropdownMenu').classList.remove('open');
+      }
+    });
+
+    function toggleDropdown() {
+      document.getElementById('dropdownMenu').classList.toggle('open');
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerHTML = `
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        `;
+      } else {
+        input.type = 'password';
+        icon.innerHTML = `
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        `;
+      }
+    }
+
+    function resetProfile() {
+      document.getElementById('fullname').value = originalName;
+      document.getElementById('email').value = originalEmail;
+      document.getElementById('password').value = '';
+    }
+
+    async function saveProfile(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('fullname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const button = document.getElementById('btn-save-profile');
+
+      if (!name || !email) {
+        showToast('Name and email are required.', 'error');
+        return;
+      }
+
+      startButtonLoading(button, 'Loading...');
+
+      try {
+        const response = await fetch('/profile/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showToast(data.error || 'Failed to update profile.', 'error');
+          return;
+        }
+
+        showToast(data.message, 'success');
+        document.getElementById('profileDisplayName').textContent = name;
+        document.getElementById('password').value = '';
+        window.location.reload();
+      } catch (error) {
+        showToast('Something went wrong while updating profile.', 'error');
+        console.error(error);
+      } finally {
+        stopButtonLoading(button);
+      }
+    }
+  </script>
+
+</body>
+</html>

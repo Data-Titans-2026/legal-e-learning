@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Legal E-Learner — ...</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.jpeg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='ui-feedback.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="{{ url_for('static', filename='ui-feedback.js') }}"></script>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-image"></div>
+  <div class="bg-overlay"></div>
+
+  <!-- Left Tagline -->
+  <div class="tagline">
+    <p>Guiding You Through The Legal Maze.</p>
+    <strong>Join For Free.</strong>
+  </div>
+
+  <!-- Signup Card -->
+  <div class="card-wrapper">
+    <div class="card">
+
+      <!-- Logo -->
+      <div class="logo-wrap">
+        <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Legal E-Learner" class="logo-img" />
+      </div>
+
+      <h1 class="card-title">CREATE YOUR ACCOUNT</h1>
+      <p class="card-subtitle">Welcome! Please fill in the details to get started.</p>
+      <div class="title-rule"></div>
+
+      <!-- STEP 1: Name -->
+      <div class="form-group" id="group-name">
+        <label for="fullname">Full Name</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </span>
+          <input type="text" id="fullname" placeholder="Enter your full name" autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- STEP 1: Email + Send OTP -->
+      <div class="form-group" id="group-email">
+        <label for="email">Email</label>
+        <div class="email-row">
+          <div class="input-icon-wrap flex1">
+            <span class="input-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+            </span>
+            <input type="email" id="email" placeholder="name@example.com" autocomplete="off" />
+          </div>
+          <button class="btn-send-otp" id="btn-send-otp" onclick="sendOTP()">Send OTP</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: OTP Fields (hidden initially) -->
+      <div class="form-group hidden" id="group-otp">
+        <label>Enter OTP <span class="otp-hint" id="otp-hint"></span></label>
+        <div class="otp-row">
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp0" oninput="otpMove(this,1)" onkeydown="otpBack(event,this,null)" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp1" oninput="otpMove(this,2)" onkeydown="otpBack(event,this,0)" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp2" oninput="otpMove(this,3)" onkeydown="otpBack(event,this,1)" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp3" oninput="otpMove(this,4)" onkeydown="otpBack(event,this,2)" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp4" oninput="otpMove(this,5)" onkeydown="otpBack(event,this,3)" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp5" oninput="otpMove(this,null)" onkeydown="otpBack(event,this,4)" />
+          <button class="btn-verify" id="btn-verify" onclick="verifyOTP()">Verify</button>
+        </div>
+        <p class="otp-error hidden" id="otp-error">❌ Incorrect OTP. Please try again.</p>
+        <p class="otp-success hidden" id="otp-success">✅ Email verified successfully!</p>
+      </div>
+
+      <!-- STEP 3: Password (hidden until OTP verified) -->
+      <div class="form-group hidden" id="group-password">
+        <label for="password">Password</label>
+        <div class="input-icon-wrap">
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="off" />
+          <button class="eye-btn" onclick="togglePass('password','eye1')" title="Show/Hide">
+            <svg id="eye1" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sign Up Button (hidden until OTP verified) -->
+      <button class="btn-signup hidden" id="btn-signup" type="button" onclick="completeSignup()">SIGN UP</button>
+
+      <p class="login-text">
+        Already have an account? <a href="{{ url_for('login') }}" class="login-link">LOGIN</a>
+      </p>
+
+      <p class="terms-text">
+        By signing up, you agree to our
+        <a href="#" class="terms-link">Terms of Service</a> and
+        <a href="#" class="terms-link">Privacy Policy</a>
+      </p>
+
+    </div>
+  </div>
+
+  <script>
+    let otpVerified = false;
+
+    async function sendOTP() {
+      const email = document.getElementById('email').value.trim();
+      const name = document.getElementById('fullname').value.trim();
+      const btn = document.getElementById('btn-send-otp');
+
+      if (!name) {
+        showToast('Please enter your full name.', 'error');
+        return;
+      }
+
+      if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email address.', 'error');
+        return;
+      }
+
+      startButtonLoading(btn, 'Sending...');
+
+      try {
+        const response = await fetch('/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showToast(data.error || 'Failed to send OTP.', 'error');
+          stopButtonLoading(btn);
+          return;
+        }
+
+        document.getElementById('otp-hint').textContent = '(OTP sent to your email)';
+        document.getElementById('group-otp').classList.remove('hidden');
+        document.getElementById('group-otp').classList.add('slide-in');
+        document.getElementById('otp0').focus();
+
+        document.getElementById('email').disabled = true;
+        document.getElementById('fullname').disabled = true;
+
+        btn.classList.add('resend');
+        stopButtonLoading(btn, 'Resend');
+        showToast(data.message, 'success');
+      } catch (error) {
+        stopButtonLoading(btn);
+        showToast('Something went wrong while sending OTP.', 'error');
+        console.error(error);
+      }
+    }
+
+    async function verifyOTP() {
+      const email = document.getElementById('email').value.trim();
+      const entered = ['otp0', 'otp1', 'otp2', 'otp3', 'otp4', 'otp5']
+        .map(id => document.getElementById(id).value).join('');
+      const errorEl = document.getElementById('otp-error');
+      const successEl = document.getElementById('otp-success');
+      const button = document.getElementById('btn-verify');
+
+      if (entered.length < 6) {
+        showToast('Please enter all 6 digits.', 'error');
+        return;
+      }
+
+      startButtonLoading(button, 'Verifying...');
+
+      try {
+        const response = await fetch('/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp: entered })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          successEl.classList.add('hidden');
+          errorEl.textContent = data.error || 'Incorrect OTP. Please try again.';
+          errorEl.classList.remove('hidden');
+
+          document.querySelectorAll('.otp-box').forEach(b => {
+            b.classList.add('shake');
+            setTimeout(() => b.classList.remove('shake'), 500);
+            b.value = '';
+          });
+          document.getElementById('otp0').focus();
+          stopButtonLoading(button, 'Verify');
+          return;
+        }
+
+        otpVerified = true;
+        errorEl.classList.add('hidden');
+        successEl.textContent = '✅ Email verified successfully!';
+        successEl.classList.remove('hidden');
+
+        for (let i = 0; i < 6; i++) {
+          document.getElementById('otp' + i).disabled = true;
+        }
+
+        button.disabled = true;
+        button.classList.remove('is-loading');
+        button.textContent = '✓ Verified';
+        button.classList.add('verified');
+
+        setTimeout(() => {
+          document.getElementById('group-password').classList.remove('hidden');
+          document.getElementById('group-password').classList.add('slide-in');
+          document.getElementById('btn-signup').classList.remove('hidden');
+          document.getElementById('btn-signup').classList.add('slide-in');
+          document.getElementById('password').focus();
+        }, 400);
+      } catch (error) {
+        stopButtonLoading(button, 'Verify');
+        showToast('Something went wrong while verifying OTP.', 'error');
+        console.error(error);
+      }
+    }
+
+    function otpMove(el, nextIdx) {
+      if (el.value && nextIdx !== null) {
+        document.getElementById('otp' + nextIdx).focus();
+      }
+    }
+
+    function otpBack(e, el, prevIdx) {
+      if (e.key === 'Backspace' && !el.value && prevIdx !== null) {
+        document.getElementById('otp' + prevIdx).focus();
+      }
+    }
+
+    function togglePass(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon  = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerHTML = `
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>`;
+      } else {
+        input.type = 'password';
+        icon.innerHTML = `
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>`;
+      }
+    }
+
+    async function completeSignup() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const button = document.getElementById('btn-signup');
+
+      if (!otpVerified) {
+        showToast('Please verify OTP first.', 'error');
+        return;
+      }
+
+      if (!password || password.length < 6) {
+        showToast('Password must be at least 6 characters long.', 'error');
+        return;
+      }
+
+      startButtonLoading(button, 'Loading...');
+
+      try {
+        const response = await fetch('/complete-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showToast(data.error || 'Signup failed.', 'error');
+          return;
+        }
+
+        showToast(data.message, 'success');
+        setTimeout(() => {
+          window.location.href = "{{ url_for('login') }}";
+        }, 250);
+      } catch (error) {
+        showToast('Something went wrong while completing signup.', 'error');
+        console.error(error);
+      } finally {
+        stopButtonLoading(button);
+      }
+    }
+  </script>
+
+</body>
+</html>

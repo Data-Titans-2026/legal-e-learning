@@ -1,0 +1,403 @@
+/* =============================================
+   Legal सलाह — Sign Up Page Styles
+   ============================================= */
+
+:root {
+  --navy:       #0d2240;
+  --navy-mid:   #1a3560;
+  --navy-light: #2a4a80;
+  --gold:       #c9a84c;
+  --white:      #ffffff;
+  --cream:      #f5f1ea;
+  --text-muted: #7a8a9a;
+  --card-bg:    rgba(250, 247, 242, 0.98);
+  --input-bg:   #ffffff;
+  --input-border: #d5cfc4;
+  --radius:     20px;
+  --shadow:     0 32px 80px rgba(10, 20, 50, 0.45);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ---------- Background ---------- */
+.bg-image {
+  position: fixed;
+  inset: 0;
+  background-image: url('/static/backgroun_image_log_in.jpeg'); /* ← change path */
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(8, 18, 40, 0.65) 0%,
+    rgba(8, 18, 40, 0.25) 55%,
+    rgba(8, 18, 40, 0.10) 100%
+  );
+  z-index: 1;
+}
+
+/* ---------- Left Tagline ---------- */
+.tagline {
+  position: fixed;
+  left: 5vw;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  color: var(--white);
+  max-width: 340px;
+  animation: fadeLeft 0.8s ease both;
+}
+
+.tagline p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 300;
+  line-height: 1.5;
+  opacity: 0.92;
+}
+
+.tagline strong {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-top: 6px;
+  color: var(--gold);
+}
+
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateY(-50%) translateX(-24px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+/* ---------- Card Wrapper ---------- */
+.card-wrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px 5vw 40px 50%;
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 44px 44px 36px;
+  width: 100%;
+  max-width: 460px;
+  animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- Logo ---------- */
+.logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.logo-img {
+  height: 150px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ---------- Title ---------- */
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.03em;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.card-subtitle {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.title-rule {
+  width: 44px;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 2px;
+  margin: 0 auto 26px;
+}
+
+/* ---------- Form Groups ---------- */
+.form-group {
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--navy-mid);
+  margin-bottom: 7px;
+}
+
+/* ---------- Input with Icon ---------- */
+.input-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.25s;
+}
+
+.input-icon-wrap:focus-within {
+  border-color: var(--navy-mid);
+}
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 13px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.input-icon-wrap input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 11px 12px 11px 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.93rem;
+  color: var(--navy);
+  outline: none;
+}
+
+.input-icon-wrap input::placeholder { color: #b8b0a6; }
+.input-icon-wrap input:disabled { opacity: 0.65; cursor: not-allowed; }
+
+/* ---------- Email Row ---------- */
+.email-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.flex1 { flex: 1; }
+
+/* ---------- Send OTP / Resend Button ---------- */
+.btn-send-otp {
+  padding: 0 18px;
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.25s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-send-otp:hover { background: var(--navy-light); transform: translateY(-1px); }
+.btn-send-otp.resend { background: #5a7aa0; }
+.btn-send-otp.resend:hover { background: var(--navy-light); }
+
+/* ---------- OTP Row ---------- */
+.otp-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.otp-box {
+  width: 42px;
+  height: 46px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: 9px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+}
+
+.otp-box:focus {
+  border-color: var(--navy-mid);
+  box-shadow: 0 0 0 3px rgba(26, 53, 96, 0.12);
+}
+
+.otp-box:disabled {
+  background: #eef0f3;
+  color: var(--text-muted);
+}
+
+/* Shake animation */
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%,60%  { transform: translateX(-6px); }
+  40%,80%  { transform: translateX(6px); }
+}
+.otp-box.shake { animation: shake 0.45s ease; border-color: #d9534f; }
+
+/* ---------- Verify Button ---------- */
+.btn-verify {
+  padding: 0 16px;
+  height: 46px;
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  border-radius: 9px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-verify:hover:not(:disabled) { background: var(--navy-light); }
+.btn-verify.verified { background: #2e7d4f; cursor: default; font-size: 0.88rem; }
+.btn-verify:disabled { cursor: default; }
+
+/* ---------- OTP Messages ---------- */
+.otp-error, .otp-success {
+  font-size: 0.8rem;
+  margin-top: 7px;
+  font-weight: 500;
+}
+.otp-error   { color: #c0392b; }
+.otp-success { color: #2e7d4f; }
+.otp-hint    { font-size: 0.7rem; color: var(--gold); font-weight: 400; text-transform: none; margin-left: 6px; }
+
+/* ---------- Eye Button ---------- */
+.eye-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0 12px;
+  transition: color 0.2s;
+  line-height: 0;
+}
+.eye-btn:hover { color: var(--navy); }
+
+/* ---------- Sign Up Button ---------- */
+.btn-signup {
+  width: 100%;
+  padding: 14px;
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.3s, transform 0.15s, box-shadow 0.3s;
+  box-shadow: 0 6px 24px rgba(13, 34, 64, 0.28);
+}
+
+.btn-signup:hover {
+  background: var(--navy-light);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(13, 34, 64, 0.36);
+}
+
+/* ---------- Login Text ---------- */
+.login-text {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.login-link {
+  color: var(--navy-mid);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold);
+  padding-bottom: 1px;
+  transition: color 0.2s;
+}
+.login-link:hover { color: var(--gold); }
+
+/* ---------- Terms ---------- */
+.terms-text {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.terms-link {
+  color: var(--navy-mid);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.terms-link:hover { color: var(--gold); }
+
+/* ---------- Utility ---------- */
+.hidden { display: none !important; }
+
+/* Slide-in reveal */
+@keyframes revealDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide-in { animation: revealDown 0.35s ease both; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .card-wrapper { padding: 40px 5vw; }
+  .tagline { display: none; }
+}
+
+@media (max-width: 480px) {
+  .card { padding: 36px 22px 30px; }
+  .card-title { font-size: 1.3rem; }
+  .otp-box { width: 36px; height: 40px; font-size: 1rem; }
+  .btn-verify { padding: 0 12px; }
+}

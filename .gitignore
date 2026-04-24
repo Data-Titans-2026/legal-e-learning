@@ -1,0 +1,10 @@
+.codex
+.venv/
+.cache/
+__pycache__/
+*.pyc
+database/*.db
+data.env
+chroma_db/
+friend_rag_files_and_folder/chroma_db/
+friend_rag_files_and_folder/chroma_db_default/

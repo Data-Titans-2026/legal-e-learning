@@ -1,0 +1,25 @@
+BUSINESS LAW — Key Concepts
+============================
+Business Entities
+-----------------
+Sole proprietorship: no liability shield, simple taxes. Partnership: shared management, joint liability. LLC: limited liability + flexible taxation (pass-through by default). Corporation: strong liability protection, possible double taxation unless S-Corp election.
+
+Contracts
+---------
+Valid contracts require: offer, acceptance, consideration (something of value exchanged), capacity, and legal purpose. Breach allows the non-breaching party to seek compensatory damages, consequential damages, or specific performance.
+
+Intellectual Property
+---------------------
+Trademarks: protect brand identifiers (™ unregistered, ® registered with USPTO). Patents: protect inventions for 20 years. Copyrights: protect original works, last life + 70 years, automatic upon creation. Trade Secrets: confidential business information protected by NDA and reasonable security measures.
+
+Employment Classification
+-------------------------
+Employers must correctly classify workers as employees or independent contractors. Misclassification leads to tax liability, unpaid benefits claims, and penalties. IRS uses a 20-factor test; DOL uses an economic reality test.
+
+Business Disputes
+-----------------
+Mediation and arbitration are alternatives to costly litigation. Arbitration clauses in contracts may require binding arbitration. Non-compete agreements protect trade secrets but must be reasonable in scope and duration.
+
+Licensing & Permits
+-------------------
+Most businesses need a general business licence, and many need industry-specific permits (health, liquor, building). Operating without required licences can result in fines and forced closure.

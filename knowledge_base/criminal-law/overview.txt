@@ -1,0 +1,27 @@
+CRIMINAL LAW — Key Concepts
+============================
+Rights of the Accused: Right to remain silent (5th Amendment), right to attorney (6th Amendment), protection from unreasonable search and seizure (4th Amendment), due process, speedy trial.
+
+Misdemeanours vs Felonies
+--------------------------
+Misdemeanours: up to 1 year in county jail. Felonies: over 1 year in state/federal prison with more severe long-term consequences including loss of voting rights and difficulty finding employment.
+
+Bail & Pretrial Release
+-----------------------
+Bail is a court-set amount for pretrial release. Factors considered: flight risk, danger to community, severity of charge, prior record. Bail bondsman typically charges 10% non-refundable fee.
+
+Plea Bargains
+-------------
+Defendant pleads guilty to a lesser charge in exchange for a reduced sentence. Must be voluntary and knowing. Judge must approve. About 90% of criminal cases resolve via plea.
+
+Expungement
+-----------
+Sealing or destroying criminal records. Eligibility varies by state and offence type. Many states allow expungement of first-time, non-violent offences after a waiting period.
+
+Common Defences
+---------------
+Self-defence: reasonable force to protect oneself or others. Insanity: did not understand the nature or wrongfulness of the act. Alibi: was elsewhere. Entrapment: government induced the crime. Statute of limitations: time to prosecute has expired.
+
+Miranda Rights
+--------------
+Police must advise suspects of right to remain silent and right to an attorney before custodial interrogation. Statements made without Miranda warning may be suppressed.

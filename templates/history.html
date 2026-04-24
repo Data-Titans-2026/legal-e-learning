@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Legal E-Learner — History</title>
+
+  <link rel="icon" href="{{ url_for('static', filename='logo.jpeg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='history.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='ui-feedback.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="{{ url_for('static', filename='ui-feedback.js') }}"></script>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <div class="nav-logo">
+      <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Legal E-Learner" />
+    </div>
+
+    <nav class="nav-links">
+      <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+      <a href="{{ url_for('history') }}" class="nav-link active">History</a>
+    </nav>
+
+    <div class="nav-user" id="userMenu">
+      <button class="user-btn" onclick="toggleDropdown()">
+        <span class="user-avatar">{{ session.get('user_name', 'U')[0] }}</span>
+        <span class="user-name">{{ session.get('user_name', 'User') }}</span>
+      </button>
+
+      <div class="dropdown-menu" id="dropdownMenu">
+        <div class="dropdown-header">{{ session.get('user_email', 'user@example.com') }}</div>
+        <hr class="dropdown-divider"/>
+        <a href="{{ url_for('profile') }}" class="dropdown-item">My Profile</a>
+        <a href="{{ url_for('logout') }}" class="dropdown-item logout">Log Out</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <a href="{{ url_for('home') }}" class="sidebar-link">Home</a>
+      <a href="{{ url_for('history') }}" class="sidebar-link active">History</a>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <h1>Chat History</h1>
+          <p>Your previous legal queries.</p>
+        </div>
+
+        <button class="btn-clear" type="button" onclick="clearAllHistory()">
+          Clear History
+        </button>
+      </div>
+
+      <div class="search-wrap">
+        <input type="text" id="historySearch" placeholder="Search history..." oninput="filterHistory()">
+      </div>
+
+      <div class="history-list" id="historyList">
+        {% if chats %}
+          {% for chat in chats %}
+            <div class="history-item"
+                 id="chat-{{ chat.id }}"
+                 data-message="{{ chat.message|lower }}"
+                 data-issue="{{ chat.issue_label|lower }}">
+              <div class="item-info">
+                <div class="item-query">{{ chat.message }}</div>
+                <div class="item-category">{{ chat.issue_label }}</div>
+              </div>
+
+              <div class="item-actions">
+                <div class="item-date">{{ chat.created_at }}</div>
+                <button class="btn-delete" type="button" onclick="deleteHistoryItem({{ chat.id }})" title="Delete">
+                  ✕
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state" id="emptyState">
+            <p>No chat history yet.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <footer class="page-footer">
+        &copy; 2024 Legal E-Learner |
+        <a href="#">Terms of Service</a> |
+        <a href="#">Privacy Policy</a>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('userMenu');
+      if (!menu.contains(e.target)) {
+        document.getElementById('dropdownMenu').classList.remove('open');
+      }
+    });
+
+    function toggleDropdown() {
+      document.getElementById('dropdownMenu').classList.toggle('open');
+    }
+
+    function filterHistory() {
+      const query = document.getElementById('historySearch').value.toLowerCase();
+      const items = document.querySelectorAll('.history-item');
+
+      items.forEach(item => {
+        const message = item.dataset.message || '';
+        const issue = item.dataset.issue || '';
+        const match = message.includes(query) || issue.includes(query);
+        item.style.display = match ? 'flex' : 'none';
+      });
+    }
+
+    async function deleteHistoryItem(chatId) {
+      showConfirm('Delete this chat from history?', async function(confirmed) {
+        if (!confirmed) return;
+
+        try {
+          const response = await fetch(`/history/delete/${chatId}`, {
+            method: 'POST'
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            showToast(data.error || 'Failed to delete chat.', 'error');
+            return;
+          }
+
+          const item = document.getElementById(`chat-${chatId}`);
+          if (item) item.remove();
+
+          checkEmptyState();
+        } catch (error) {
+          showToast('Something went wrong while deleting chat.', 'error');
+          console.error(error);
+        }
+      });
+    }
+
+    async function clearAllHistory() {
+      showConfirm('Clear all chat history? This cannot be undone.', async function(confirmed) {
+        if (!confirmed) return;
+
+        try {
+          const response = await fetch('/history/clear', {
+            method: 'POST'
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            showToast(data.error || 'Failed to clear history.', 'error');
+            return;
+          }
+
+          document.querySelectorAll('.history-item').forEach(item => item.remove());
+          checkEmptyState();
+        } catch (error) {
+          showToast('Something went wrong while clearing history.', 'error');
+          console.error(error);
+        }
+      });
+    }
+
+    function checkEmptyState() {
+      const historyList = document.getElementById('historyList');
+      const remainingItems = historyList.querySelectorAll('.history-item');
+
+      let emptyState = document.getElementById('emptyState');
+
+      if (remainingItems.length === 0) {
+        if (!emptyState) {
+          emptyState = document.createElement('div');
+          emptyState.className = 'empty-state';
+          emptyState.id = 'emptyState';
+          emptyState.innerHTML = '<p>No chat history yet.</p>';
+          historyList.appendChild(emptyState);
+        }
+      } else if (emptyState) {
+        emptyState.remove();
+      }
+    }
+  </script>
+
+</body>
+</html>
