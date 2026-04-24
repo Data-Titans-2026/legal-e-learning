@@ -354,6 +354,10 @@ body {
   max-height: 120px;
 }
 .input-wrap textarea::placeholder { color: #aab0b8; }
+.input-wrap textarea:disabled {
+  color: var(--text-muted);
+  cursor: wait;
+}
 
 .btn-send {
   display: flex; align-items: center; gap: 8px;
@@ -377,6 +381,16 @@ body {
   box-shadow: 0 12px 26px rgba(13,34,64,0.26);
 }
 .btn-send:active { transform: translateY(0); }
+.btn-send:disabled {
+  cursor: wait;
+  opacity: 0.78;
+  transform: none;
+  box-shadow: 0 6px 16px rgba(13,34,64,0.14);
+}
+.btn-send:disabled:hover {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  transform: none;
+}
 
 /* ── Documents Panel ── */
 .docs-panel {

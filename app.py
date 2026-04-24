@@ -29,6 +29,7 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify, s
 import sqlite3
 import random
 from datetime import datetime, timedelta
+from pathlib import Path
 from werkzeug.security import generate_password_hash, check_password_hash
 import smtplib
 from email.mime.text import MIMEText
@@ -90,12 +91,34 @@ def generate_otp():
 
 
 def get_db_connection():
+    Path("database").mkdir(exist_ok=True)
     conn = sqlite3.connect("database/app.db")
     conn.row_factory = sqlite3.Row
     return conn
 
 def ensure_chat_schema():
     conn = get_db_connection()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            is_verified INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS otp_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            otp_code TEXT NOT NULL,
+            is_verified INTEGER DEFAULT 0,
+            expires_at TIMESTAMP NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS chat_threads (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -127,6 +150,13 @@ def ensure_chat_schema():
     ]
     if "thread_id" not in columns:
         conn.execute("ALTER TABLE chats ADD COLUMN thread_id INTEGER")
+
+    otp_columns = [
+        row["name"]
+        for row in conn.execute("PRAGMA table_info(otp_requests)").fetchall()
+    ]
+    if "is_verified" not in otp_columns:
+        conn.execute("ALTER TABLE otp_requests ADD COLUMN is_verified INTEGER DEFAULT 0")
 
     orphan_chats = conn.execute("""
         SELECT id, user_id, issue, message, created_at
@@ -198,6 +228,9 @@ def make_thread_title(message):
         return title[:67].rstrip() + "..."
     return title or "Legal chat"
 
+def request_json():
+    return request.get_json(silent=True) or {}
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-to-a-random-secret-key")
 ensure_chat_schema()
@@ -213,7 +246,7 @@ def ask():
     if "user_id" not in session:
         return jsonify({"error": "Unauthorized"}), 401
 
-    data = request.get_json()
+    data = request_json()
     issue = data.get("issue", "others")
     message = data.get("message", "").strip()
     thread_id = data.get("thread_id")
@@ -263,7 +296,7 @@ def ask():
 
 @app.route("/login", methods=["POST"])
 def do_login():
-    data = request.get_json()
+    data = request_json()
     email = data.get("email", "").strip()
     password = data.get("password", "")
 
@@ -366,13 +399,15 @@ def update_profile():
     if auth:
         return jsonify({"error": "Unauthorized"}), 401
 
-    data = request.get_json()
+    data = request_json()
     name = data.get("name", "").strip()
     email = data.get("email", "").strip()
     password = data.get("password", "").strip()
 
     if not name or not email:
         return jsonify({"error": "Name and email are required"}), 400
+    if password and len(password) < 6:
+        return jsonify({"error": "Password must be at least 6 characters long"}), 400
 
     conn = get_db_connection()
 
@@ -512,23 +547,31 @@ def logout():
 
 @app.route("/send-otp", methods=["POST"])
 def send_otp():
-    data = request.get_json()
-    name = data.get("name")
-    email = data.get("email")
+    data = request_json()
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
 
     if not name or not email:
         return jsonify({"error": "Missing name or email"}), 400
 
+    conn = get_db_connection()
+    existing_user = conn.execute(
+        "SELECT id FROM users WHERE email = ?",
+        (email,)
+    ).fetchone()
+    if existing_user:
+        conn.close()
+        return jsonify({"error": "An account with this email already exists"}), 400
+
     otp = generate_otp()
     expires_at = datetime.now() + timedelta(minutes=5)
 
-    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("DELETE FROM otp_requests WHERE email = ?", (email,))
     cursor.execute("""
-        INSERT INTO otp_requests (name, email, otp_code, expires_at)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO otp_requests (name, email, otp_code, is_verified, expires_at)
+        VALUES (?, ?, ?, 0, ?)
     """, (name, email, otp, expires_at))
 
     conn.commit()
@@ -544,9 +587,12 @@ def send_otp():
 
 @app.route("/verify-otp", methods=["POST"])
 def verify_otp():
-    data = request.get_json()
-    email = data.get("email")
-    otp = data.get("otp")
+    data = request_json()
+    email = data.get("email", "").strip()
+    otp = data.get("otp", "").strip()
+
+    if not email or not otp:
+        return jsonify({"error": "Email and OTP are required"}), 400
 
     conn = get_db_connection()
     record = conn.execute(
@@ -563,26 +609,50 @@ def verify_otp():
         return jsonify({"error": "Invalid OTP"}), 400
 
     if datetime.now() > datetime.fromisoformat(record["expires_at"]):
+        conn = get_db_connection()
+        conn.execute("DELETE FROM otp_requests WHERE email = ?", (email,))
+        conn.commit()
+        conn.close()
         return jsonify({"error": "OTP expired"}), 400
+
+    conn = get_db_connection()
+    conn.execute("""
+        UPDATE otp_requests
+        SET is_verified = 1
+        WHERE email = ?
+    """, (email,))
+    conn.commit()
+    conn.close()
 
     return jsonify({"message": "OTP verified"})
 
 @app.route("/complete-signup", methods=["POST"])
 def complete_signup():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
+    data = request_json()
+    email = data.get("email", "").strip()
+    password = data.get("password", "")
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+    if len(password) < 6:
+        return jsonify({"error": "Password must be at least 6 characters long"}), 400
 
     conn = get_db_connection()
 
     record = conn.execute(
-        "SELECT * FROM otp_requests WHERE email = ?",
+        "SELECT * FROM otp_requests WHERE email = ? AND is_verified = 1",
         (email,)
     ).fetchone()
 
     if not record:
         conn.close()
         return jsonify({"error": "OTP not verified"}), 400
+
+    if datetime.now() > datetime.fromisoformat(record["expires_at"]):
+        conn.execute("DELETE FROM otp_requests WHERE email = ?", (email,))
+        conn.commit()
+        conn.close()
+        return jsonify({"error": "OTP expired"}), 400
 
     password_hash = generate_password_hash(password)
 

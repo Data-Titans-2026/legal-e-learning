@@ -24,10 +24,15 @@ CREATE TABLE IF NOT EXISTS otp_requests (
     name TEXT NOT NULL,
     email TEXT NOT NULL,
     otp_code TEXT NOT NULL,
+    is_verified INTEGER DEFAULT 0,
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 """)
+
+otp_columns = [row[1] for row in cursor.execute("PRAGMA table_info(otp_requests)").fetchall()]
+if "is_verified" not in otp_columns:
+    cursor.execute("ALTER TABLE otp_requests ADD COLUMN is_verified INTEGER DEFAULT 0")
 
 # CHAT TABLE
 cursor.execute("""

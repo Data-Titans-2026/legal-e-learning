@@ -44,7 +44,7 @@
             <circle cx="12" cy="7" r="4"/>
           </svg>
         </span>
-        <span class="user-name" id="displayName">User</span>
+        <span class="user-name" id="displayName">{{ session.get('user_name', 'User') }}</span>
         <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
           fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"/>
@@ -53,7 +53,7 @@
 
       <div class="dropdown-menu" id="dropdownMenu">
         <div class="dropdown-header">
-          <span id="dropdownEmail">admin@legalelearning.com</span>
+          <span id="dropdownEmail">{{ session.get('user_email', 'user@example.com') }}</span>
         </div>
         <hr class="dropdown-divider"/>
         <a href="{{ url_for('profile') }}" class="dropdown-item">
@@ -216,7 +216,7 @@
     }
 
     function handleLogout() {
-      window.location.href = "{{ url_for('login') }}";
+      window.location.href = "{{ url_for('logout') }}";
     }
   </script>
 

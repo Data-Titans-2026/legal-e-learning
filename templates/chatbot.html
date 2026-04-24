@@ -46,14 +46,14 @@
             <circle cx="12" cy="7" r="4" />
           </svg>
         </span>
-        <span class="user-name">User</span>
+        <span class="user-name">{{ session.get('user_name', 'User') }}</span>
         <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </button>
       <div class="dropdown-menu" id="dropdownMenu">
-        <div class="dropdown-header">admin@legalelearning.com</div>
+        <div class="dropdown-header">{{ session.get('user_email', 'user@example.com') }}</div>
         <hr class="dropdown-divider" />
         <a href="{{ url_for('profile') }}" class="dropdown-item">
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -63,7 +63,7 @@
           </svg>
           My Profile
         </a>
-        <a href="{{ url_for('login') }}" class="dropdown-item logout">
+        <a href="{{ url_for('logout') }}" class="dropdown-item logout">
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -137,8 +137,8 @@
               <textarea id="msgInput" placeholder="Type your message..." rows="1" onkeydown="handleKey(event)"
                 oninput="autoResize(this)"></textarea>
             </div>
-            <button class="btn-send" onclick="sendMessage()">
-              Send
+            <button class="btn-send" id="sendButton" onclick="sendMessage()">
+              <span class="send-label">Send</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13" />
@@ -212,6 +212,8 @@
     let currentThreadId = params.get('thread_id') || null;
     let issue = params.get('issue') || 'others';
     let config = issueConfig[issue] || issueConfig['others'];
+    let waitingForReply = false;
+    const minReplyDelay = 750;
 
     function applyIssueConfig(nextIssue) {
       issue = nextIssue || 'others';
@@ -241,7 +243,7 @@
     if (currentThreadId) {
       loadThread(currentThreadId);
     } else {
-      appendBotMessage(`Hello! I'm your RAG Legal Assistant for <strong>${config.title.replace(' Chat', '')}</strong>. I have loaded the relevant legal documents. How can I help you today?`);
+      appendTrustedBotMessage(`Hello! I'm your RAG Legal Assistant for <strong>${config.title.replace(' Chat', '')}</strong>. I have loaded the relevant legal documents. How can I help you today?`);
     }
 
     async function loadThread(threadId) {
@@ -274,14 +276,15 @@
     function sendMessage() {
       const input = document.getElementById('msgInput');
       const text = input.value.trim();
-      if (!text) return;
+      if (!text || waitingForReply) return;
 
       appendUserMessage(text);
       input.value = '';
       input.style.height = 'auto';
+      setComposerLoading(true);
 
-      // Typing indicator
       const typingId = appendTyping();
+      const startedAt = Date.now();
 
       fetch('/ask', {
         method: 'POST',
@@ -293,8 +296,10 @@
         })
       })
         .then(response => response.json().then(data => ({ ok: response.ok, data })))
-        .then(result => {
+        .then(async result => {
+          await waitForMinimumDelay(startedAt);
           removeTyping(typingId);
+          setComposerLoading(false);
 
           if (!result.ok) {
             appendBotMessage(`Error: ${result.data.error || 'Failed to get response.'}`);
@@ -309,8 +314,10 @@
 
           appendBotMessage(result.data.reply);
         })
-        .catch(error => {
+        .catch(async error => {
+          await waitForMinimumDelay(startedAt);
           removeTyping(typingId);
+          setComposerLoading(false);
           appendBotMessage('Something went wrong while contacting the server.');
           console.error(error);
         });
@@ -323,6 +330,23 @@
     function autoResize(el) {
       el.style.height = 'auto';
       el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function setComposerLoading(isLoading) {
+      waitingForReply = isLoading;
+      const input = document.getElementById('msgInput');
+      const button = document.getElementById('sendButton');
+      const label = button.querySelector('.send-label');
+
+      input.disabled = isLoading;
+      button.disabled = isLoading;
+      label.textContent = isLoading ? 'Sending' : 'Send';
+    }
+
+    function waitForMinimumDelay(startedAt) {
+      const remaining = minReplyDelay - (Date.now() - startedAt);
+      if (remaining <= 0) return Promise.resolve();
+      return new Promise(resolve => setTimeout(resolve, remaining));
     }
 
     // ── Message Helpers ───────────────────────────
@@ -350,7 +374,11 @@
       scrollBottom();
     }
 
-    function appendBotMessage(html, time = getTime()) {
+    function appendBotMessage(text, time = getTime()) {
+      appendTrustedBotMessage(formatBotText(text), time);
+    }
+
+    function appendTrustedBotMessage(html, time = getTime()) {
       const box = document.getElementById('chatMessages');
       const div = document.createElement('div');
       div.className = 'msg-row bot';
@@ -407,7 +435,16 @@
     }
 
     function escHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatBotText(text) {
+      return escHtml(text).replace(/\n/g, '<br>');
     }
 
     // ── Dropdown ──────────────────────────────────
