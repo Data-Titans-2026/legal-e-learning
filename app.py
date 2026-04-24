@@ -51,11 +51,11 @@ def send_otp_email(receiver_email, otp):
         print("Email error: EMAIL_ADDRESS or EMAIL_PASSWORD is not configured")
         return False
 
-    subject = "Your OTP for Legal E-Learner"
+    subject = "Your OTP for Legal E-Learning"
     body = f"""
 Hello,
 
-Your OTP for Legal E-Learner is:
+Your OTP for Legal E-Learning is:
 
 {otp}
 
@@ -64,7 +64,7 @@ This OTP will expire in 5 minutes.
 If you did not request this, please ignore.
 
 Regards,
-Legal E-Learner Team
+Legal E-Learning Team
 """
 
     msg = MIMEMultipart()

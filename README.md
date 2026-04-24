@@ -1,4 +1,4 @@
-# Legal Salah
+# LEGAL_E_LEARNING
 
 A Flask legal assistant with user accounts, chat history, and local RAG retrieval over category-wise legal knowledge files.
 

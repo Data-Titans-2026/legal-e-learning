@@ -1,5 +1,5 @@
 """
-Local RAG engine for Legal Salah.
+Local RAG engine for LEGAL_E_LEARNING.
 
 Vector store: ChromaDB, persisted under ./chroma_db
 Embeddings: Chroma's default MiniLM embedding function
