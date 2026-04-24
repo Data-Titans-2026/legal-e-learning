@@ -207,31 +207,68 @@
       }
     };
 
-    // ── Read issue from URL ───────────────────────
+    // ── Read issue/thread from URL ────────────────
     const params = new URLSearchParams(window.location.search);
-    const issue = params.get('issue') || 'others';
-    const config = issueConfig[issue] || issueConfig['others'];
+    let currentThreadId = params.get('thread_id') || null;
+    let issue = params.get('issue') || 'others';
+    let config = issueConfig[issue] || issueConfig['others'];
 
-    document.getElementById('chatTitle').textContent = config.title;
-    document.getElementById('chatSubtitle').textContent = config.subtitle;
+    function applyIssueConfig(nextIssue) {
+      issue = nextIssue || 'others';
+      config = issueConfig[issue] || issueConfig['others'];
 
-    // Populate docs
-    const docsList = document.getElementById('docsList');
-    config.docs.forEach(doc => {
-      const el = document.createElement('div');
-      el.className = 'doc-item';
-      el.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-        </svg>
-        ${doc}`;
-      docsList.appendChild(el);
-    });
+      document.getElementById('chatTitle').textContent = config.title;
+      document.getElementById('chatSubtitle').textContent = config.subtitle;
 
-    // ── Welcome message ───────────────────────────
-    appendBotMessage(`Hello! I'm your RAG Legal Assistant for <strong>${config.title.replace(' Chat', '')}</strong>. I have loaded the relevant legal documents. How can I help you today?`);
+      const docsList = document.getElementById('docsList');
+      docsList.innerHTML = '';
+      config.docs.forEach(doc => {
+        const el = document.createElement('div');
+        el.className = 'doc-item';
+        el.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          ${doc}`;
+        docsList.appendChild(el);
+      });
+    }
+
+    applyIssueConfig(issue);
+
+    if (currentThreadId) {
+      loadThread(currentThreadId);
+    } else {
+      appendBotMessage(`Hello! I'm your RAG Legal Assistant for <strong>${config.title.replace(' Chat', '')}</strong>. I have loaded the relevant legal documents. How can I help you today?`);
+    }
+
+    async function loadThread(threadId) {
+      try {
+        const response = await fetch(`/chat/thread/${threadId}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          appendBotMessage(`Error: ${data.error || 'Failed to load chat thread.'}`);
+          return;
+        }
+
+        currentThreadId = data.thread.id;
+        applyIssueConfig(data.thread.issue);
+        document.getElementById('chatTitle').textContent = data.thread.title || config.title;
+        document.getElementById('chatSubtitle').textContent = `${data.thread.issue_label} conversation`;
+        document.getElementById('chatMessages').innerHTML = '';
+
+        data.messages.forEach(item => {
+          appendUserMessage(item.message, formatStoredTime(item.created_at));
+          appendBotMessage(item.response, formatStoredTime(item.created_at));
+        });
+      } catch (error) {
+        appendBotMessage('Something went wrong while loading this chat thread.');
+        console.error(error);
+      }
+    }
 
     // ── Send Message ──────────────────────────────
     function sendMessage() {
@@ -251,7 +288,8 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           issue: issue,
-          message: text
+          message: text,
+          thread_id: currentThreadId
         })
       })
         .then(response => response.json().then(data => ({ ok: response.ok, data })))
@@ -261,6 +299,12 @@
           if (!result.ok) {
             appendBotMessage(`Error: ${result.data.error || 'Failed to get response.'}`);
             return;
+          }
+
+          currentThreadId = result.data.thread_id || currentThreadId;
+          if (currentThreadId) {
+            const nextUrl = `${window.location.pathname}?thread_id=${currentThreadId}`;
+            window.history.replaceState({}, '', nextUrl);
           }
 
           appendBotMessage(result.data.reply);
@@ -286,20 +330,27 @@
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    function appendUserMessage(text) {
+    function formatStoredTime(value) {
+      if (!value) return getTime();
+      const parsed = new Date(value.replace(' ', 'T'));
+      if (Number.isNaN(parsed.getTime())) return getTime();
+      return parsed.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function appendUserMessage(text, time = getTime()) {
       const box = document.getElementById('chatMessages');
       const div = document.createElement('div');
       div.className = 'msg-row user';
       div.innerHTML = `
         <div class="bubble user-bubble">
           ${escHtml(text)}
-          <span class="msg-time">${getTime()}</span>
+          <span class="msg-time">${time}</span>
         </div>`;
       box.appendChild(div);
       scrollBottom();
     }
 
-    function appendBotMessage(html) {
+    function appendBotMessage(html, time = getTime()) {
       const box = document.getElementById('chatMessages');
       const div = document.createElement('div');
       div.className = 'msg-row bot';
@@ -312,7 +363,7 @@
           </svg>
         </div>
         <div class="bot-content">
-          <div class="bot-name">RAG Legal Assistant <span class="bot-time">${getTime()}</span></div>
+          <div class="bot-name">RAG Legal Assistant <span class="bot-time">${time}</span></div>
           <div class="bubble bot-bubble">${html}</div>
         </div>`;
       box.appendChild(div);

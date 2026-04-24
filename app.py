@@ -94,6 +94,68 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def ensure_chat_schema():
+    conn = get_db_connection()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS chat_threads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            issue TEXT,
+            title TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS chats (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            thread_id INTEGER,
+            user_id INTEGER NOT NULL,
+            issue TEXT,
+            message TEXT,
+            response TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(thread_id) REFERENCES chat_threads(id),
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    """)
+
+    columns = [
+        row["name"]
+        for row in conn.execute("PRAGMA table_info(chats)").fetchall()
+    ]
+    if "thread_id" not in columns:
+        conn.execute("ALTER TABLE chats ADD COLUMN thread_id INTEGER")
+
+    orphan_chats = conn.execute("""
+        SELECT id, user_id, issue, message, created_at
+        FROM chats
+        WHERE thread_id IS NULL
+        ORDER BY id
+    """).fetchall()
+
+    for chat in orphan_chats:
+        title = make_thread_title(chat["message"])
+        cursor = conn.execute("""
+            INSERT INTO chat_threads (user_id, issue, title, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            chat["user_id"],
+            chat["issue"],
+            title,
+            chat["created_at"],
+            chat["created_at"]
+        ))
+        conn.execute("""
+            UPDATE chats
+            SET thread_id = ?
+            WHERE id = ?
+        """, (cursor.lastrowid, chat["id"]))
+
+    conn.commit()
+    conn.close()
+
 def require_login():
     if "user_id" not in session:
         return redirect(url_for("login"))
@@ -130,8 +192,15 @@ def format_issue_name(issue):
     }
     return issue_map.get(issue, "General Legal")
 
+def make_thread_title(message):
+    title = (message or "Legal chat").strip()
+    if len(title) > 70:
+        return title[:67].rstrip() + "..."
+    return title or "Legal chat"
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-to-a-random-secret-key")
+ensure_chat_schema()
 
 
 @app.route("/")
@@ -147,22 +216,49 @@ def ask():
     data = request.get_json()
     issue = data.get("issue", "others")
     message = data.get("message", "").strip()
+    thread_id = data.get("thread_id")
 
     if not message:
         return jsonify({"error": "Message is required"}), 400
 
+    conn = get_db_connection()
+
+    if thread_id:
+        thread = conn.execute("""
+            SELECT id, issue
+            FROM chat_threads
+            WHERE id = ? AND user_id = ?
+        """, (thread_id, session["user_id"])).fetchone()
+
+        if thread is None:
+            conn.close()
+            return jsonify({"error": "Thread not found"}), 404
+
+        issue = thread["issue"] or issue
+    else:
+        cursor = conn.execute("""
+            INSERT INTO chat_threads (user_id, issue, title)
+            VALUES (?, ?, ?)
+        """, (session["user_id"], issue, make_thread_title(message)))
+        thread_id = cursor.lastrowid
+
     response_text = generate_chat_response(issue, message)
 
-    conn = get_db_connection()
     conn.execute("""
-        INSERT INTO chats (user_id, issue, message, response)
-        VALUES (?, ?, ?, ?)
-    """, (session["user_id"], issue, message, response_text))
+        INSERT INTO chats (thread_id, user_id, issue, message, response)
+        VALUES (?, ?, ?, ?, ?)
+    """, (thread_id, session["user_id"], issue, message, response_text))
+    conn.execute("""
+        UPDATE chat_threads
+        SET updated_at = CURRENT_TIMESTAMP
+        WHERE id = ? AND user_id = ?
+    """, (thread_id, session["user_id"]))
     conn.commit()
     conn.close()
 
     return jsonify({
-        "reply": response_text
+        "reply": response_text,
+        "thread_id": thread_id
     })
 
 @app.route("/login", methods=["POST"])
@@ -217,25 +313,34 @@ def history():
 
     conn = get_db_connection()
     rows = conn.execute("""
-        SELECT id, issue, message, response, created_at
-        FROM chats
-        WHERE user_id = ?
-        ORDER BY id DESC
+        SELECT
+            t.id,
+            t.issue,
+            t.title,
+            t.created_at,
+            t.updated_at,
+            COUNT(c.id) AS message_count
+        FROM chat_threads t
+        LEFT JOIN chats c ON c.thread_id = t.id
+        WHERE t.user_id = ?
+        GROUP BY t.id
+        ORDER BY t.updated_at DESC, t.id DESC
     """, (session["user_id"],)).fetchall()
     conn.close()
 
-    chats = []
+    threads = []
     for row in rows:
-        chats.append({
+        threads.append({
             "id": row["id"],
             "issue": row["issue"],
             "issue_label": format_issue_name(row["issue"]),
-            "message": row["message"],
-            "response": row["response"],
-            "created_at": row["created_at"]
+            "title": row["title"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+            "message_count": row["message_count"]
         })
 
-    return render_template("history.html", chats=chats)
+    return render_template("history.html", threads=threads)
 
 @app.route("/profile")
 def profile():
@@ -304,8 +409,8 @@ def update_profile():
 
 
 
-@app.route("/history/delete/<int:chat_id>", methods=["POST"])
-def delete_history_item(chat_id):
+@app.route("/history/delete/<int:thread_id>", methods=["POST"])
+def delete_history_item(thread_id):
     auth = require_login()
     if auth:
         return jsonify({"error": "Unauthorized"}), 401
@@ -313,12 +418,16 @@ def delete_history_item(chat_id):
     conn = get_db_connection()
     conn.execute("""
         DELETE FROM chats
+        WHERE thread_id = ? AND user_id = ?
+    """, (thread_id, session["user_id"]))
+    conn.execute("""
+        DELETE FROM chat_threads
         WHERE id = ? AND user_id = ?
-    """, (chat_id, session["user_id"]))
+    """, (thread_id, session["user_id"]))
     conn.commit()
     conn.close()
 
-    return jsonify({"message": "Chat deleted successfully"})
+    return jsonify({"message": "Thread deleted successfully"})
 
 
 @app.route("/history/clear", methods=["POST"])
@@ -332,10 +441,60 @@ def clear_history():
         DELETE FROM chats
         WHERE user_id = ?
     """, (session["user_id"],))
+    conn.execute("""
+        DELETE FROM chat_threads
+        WHERE user_id = ?
+    """, (session["user_id"],))
     conn.commit()
     conn.close()
 
     return jsonify({"message": "History cleared successfully"})
+
+
+@app.route("/chat/thread/<int:thread_id>")
+def get_chat_thread(thread_id):
+    auth = require_login()
+    if auth:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    conn = get_db_connection()
+    thread = conn.execute("""
+        SELECT id, issue, title, created_at, updated_at
+        FROM chat_threads
+        WHERE id = ? AND user_id = ?
+    """, (thread_id, session["user_id"])).fetchone()
+
+    if thread is None:
+        conn.close()
+        return jsonify({"error": "Thread not found"}), 404
+
+    rows = conn.execute("""
+        SELECT id, message, response, created_at
+        FROM chats
+        WHERE thread_id = ? AND user_id = ?
+        ORDER BY id ASC
+    """, (thread_id, session["user_id"])).fetchall()
+    conn.close()
+
+    return jsonify({
+        "thread": {
+            "id": thread["id"],
+            "issue": thread["issue"],
+            "issue_label": format_issue_name(thread["issue"]),
+            "title": thread["title"],
+            "created_at": thread["created_at"],
+            "updated_at": thread["updated_at"]
+        },
+        "messages": [
+            {
+                "id": row["id"],
+                "message": row["message"],
+                "response": row["response"],
+                "created_at": row["created_at"]
+            }
+            for row in rows
+        ]
+    })
 
 
 @app.route("/chatbot")

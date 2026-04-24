@@ -62,24 +62,25 @@
       </div>
 
       <div class="history-list" id="historyList">
-        {% if chats %}
-          {% for chat in chats %}
-            <div class="history-item"
-                 id="chat-{{ chat.id }}"
-                 data-message="{{ chat.message|lower }}"
-                 data-issue="{{ chat.issue_label|lower }}">
+        {% if threads %}
+          {% for thread in threads %}
+            <a class="history-item"
+                 id="thread-{{ thread.id }}"
+                 href="{{ url_for('chatbot') }}?thread_id={{ thread.id }}"
+                 data-message="{{ thread.title|lower }}"
+                 data-issue="{{ thread.issue_label|lower }}">
               <div class="item-info">
-                <div class="item-query">{{ chat.message }}</div>
-                <div class="item-category">{{ chat.issue_label }}</div>
+                <div class="item-query">{{ thread.title }}</div>
+                <div class="item-category">{{ thread.issue_label }} · {{ thread.message_count }} message{% if thread.message_count != 1 %}s{% endif %}</div>
               </div>
 
               <div class="item-actions">
-                <div class="item-date">{{ chat.created_at }}</div>
-                <button class="btn-delete" type="button" onclick="deleteHistoryItem({{ chat.id }})" title="Delete">
+                <div class="item-date">{{ thread.updated_at }}</div>
+                <button class="btn-delete" type="button" onclick="deleteHistoryItem(event, {{ thread.id }})" title="Delete">
                   ✕
                 </button>
               </div>
-            </div>
+            </a>
           {% endfor %}
         {% else %}
           <div class="empty-state" id="emptyState">
@@ -120,28 +121,31 @@
       });
     }
 
-    async function deleteHistoryItem(chatId) {
-      showConfirm('Delete this chat from history?', async function(confirmed) {
+    async function deleteHistoryItem(event, threadId) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      showConfirm('Delete this thread from history?', async function(confirmed) {
         if (!confirmed) return;
 
         try {
-          const response = await fetch(`/history/delete/${chatId}`, {
+          const response = await fetch(`/history/delete/${threadId}`, {
             method: 'POST'
           });
 
           const data = await response.json();
 
           if (!response.ok) {
-            showToast(data.error || 'Failed to delete chat.', 'error');
+            showToast(data.error || 'Failed to delete thread.', 'error');
             return;
           }
 
-          const item = document.getElementById(`chat-${chatId}`);
+          const item = document.getElementById(`thread-${threadId}`);
           if (item) item.remove();
 
           checkEmptyState();
         } catch (error) {
-          showToast('Something went wrong while deleting chat.', 'error');
+          showToast('Something went wrong while deleting thread.', 'error');
           console.error(error);
         }
       });
