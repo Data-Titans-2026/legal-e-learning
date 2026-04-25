@@ -90,6 +90,38 @@ Open:
 http://127.0.0.1:5000
 ```
 
+## Free Deployment on Render
+
+This project is ready to deploy as a Render Web Service. Push the latest code to
+GitHub, then create a new Render service from the repository in your GitHub
+organization.
+
+If Render detects `render.yaml`, it can create the service with these settings:
+
+```text
+Runtime: Python
+Plan: Free
+Build Command: pip install -r requirements.txt
+Start Command: gunicorn app:app
+```
+
+Add these environment variables in the Render dashboard:
+
+```env
+EMAIL_ADDRESS="your_email@gmail.com"
+EMAIL_PASSWORD="your_gmail_app_password"
+GROQ_API_KEY="your_groq_api_key"
+LLM_PROVIDER="groq"
+SECRET_KEY="a-long-random-secret"
+```
+
+For Gmail OTP, use a Gmail app password, not your normal Gmail password.
+
+Render Free is fine for a hackathon demo, but its local filesystem is ephemeral.
+That means `database/app.db` and generated `chroma_db/` files can be lost after a
+restart, redeploy, or spin-down. For a production version, move user/chat data
+from SQLite to a hosted Postgres database.
+
 ## App Flow
 
 1. Sign up with name and email.
