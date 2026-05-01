@@ -198,5 +198,5 @@ The initializer is migration-friendly for the current project: it creates missin
 - On macOS or Linux, use `python3` instead of `python` if your system maps `python` to Python 2 or does not provide a `python` command.
 - On Windows, `py` uses the Python launcher. If `py` is unavailable, try `python` instead.
 - A `401 Invalid API Key` response from Groq means the key in `data.env` is invalid or revoked.
-- Without a valid Groq key, the chatbot still returns the most relevant local reference material.
+- Without a valid Groq key, the chatbot still returns the most relevant local reference material..
 - Signup completion is enforced server-side: an OTP request must be verified before `/complete-signup` will create the user.
